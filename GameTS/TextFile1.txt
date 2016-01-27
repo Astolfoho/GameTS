@@ -1,0 +1,41 @@
+﻿var oright = otherObj.x - otherObj.width;
+            var oleft = otherObj.x;
+            var otop = otherObj.y;
+            var obottom = otherObj.y + otherObj.height;
+
+
+            var right = this.obj.x + this.obj.width;
+            var left = this.obj.x;
+            var top = this.obj.y;
+            var bottom = this.obj.height + this.obj.y;
+
+            var right = left < oright;
+            var left = right > oleft;
+            var top = bottom > otop;
+            var botom = top < obottom;
+
+
+
+            if (left < oright &&
+                right > oleft &&
+                top < obottom &&
+                bottom > otop) {
+
+              
+                if (this.x +wid < otherObj.x) {
+                    return CollisionResult.;;
+                }
+
+                if (this.x < otherObj.x) {
+                    return CollisionResult.;;
+                }
+
+                if (this.x < otherObj.x) {
+                    return CollisionResult.;;
+                }
+
+
+
+
+            }
+            return 0;
