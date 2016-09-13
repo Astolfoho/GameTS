@@ -4,10 +4,14 @@ A oriented object typescript 2d game engine.
 
 ## Basic Usage ##
 
-1 Create a class 
+1 Create a class
+
 2 inherit from any base object
+
 3 call the super constructor passing the args(sprite, positions, etc)
+
 4 implement the onUpdate method to do the animation
+
 
 if the object needs to move, set the velocity and call **this.updatePosition** or **this.updatePositionWithGravity** if you want gravity
 
