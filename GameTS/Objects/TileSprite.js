@@ -38,7 +38,6 @@ export class TileSprite extends BaseObject {
     setAnimation(name) {
         if (this.currentAnimation != name) {
             this.currentAnimation = name;
-            this.resetAnimation();
         }
     }
     resetAnimation() {
@@ -48,8 +47,12 @@ export class TileSprite extends BaseObject {
     }
     render(context) {
         this.onUpdate();
+        if (this.currentAnimation != this.lastRederedAnimation || !this.lastRederedAnimation) {
+            this.resetAnimation();
+        }
         var spriteX = Math.floor(this.w * this.nextSprite) + this.nextSprite;
         if (this.currentAnimation) {
+            this.lastRederedAnimation = this.currentAnimation;
             spriteX = Math.floor(this.w * this.animations[this.currentAnimation][this.nextSprite]) + this.animations[this.currentAnimation][this.nextSprite];
         }
         context.drawImage(this.image, spriteX, 0, this.w, this.image.height, this.x, this.y, this.w, this.h);

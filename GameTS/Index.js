@@ -1,5 +1,6 @@
 import Game from './Game';
 import { Back, DiamondsLabel, Ground, Dude, Diamond, RedDiamond, GreenDiamond, GoldenDiamond, Enemy } from './tests';
+window["gobalVars"] = {};
 var canvas = document.getElementById("theCanvas");
 var game = new Game(canvas);
 var back = new Back();

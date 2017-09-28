@@ -15,6 +15,7 @@ export abstract class TileSprite extends BaseObject {
     private drawnFrames: number;
     private animations: any;
     private currentAnimation: string;
+    private lastRederedAnimation: string;
 
     constructor(url: string, x: number, y: number, width: number, duraion: number, height?: number) {
         super();
@@ -59,8 +60,7 @@ export abstract class TileSprite extends BaseObject {
 
     public setAnimation(name: string) {
         if (this.currentAnimation != name) {
-            this.currentAnimation = name;
-            this.resetAnimation();
+            this.currentAnimation = name;    
         }
     }
 
@@ -73,8 +73,13 @@ export abstract class TileSprite extends BaseObject {
     public render(context: IDrawingContext): void {
         this.onUpdate();
 
+        if (this.currentAnimation != this.lastRederedAnimation || !this.lastRederedAnimation) {
+            this.resetAnimation();
+        }
+
         var spriteX = Math.floor(this.w * this.nextSprite) + this.nextSprite;
         if (this.currentAnimation) {
+            this.lastRederedAnimation = this.currentAnimation;
             spriteX = Math.floor(this.w * this.animations[this.currentAnimation][this.nextSprite]) + this.animations[this.currentAnimation][this.nextSprite];
         }
         context.drawImage(this.image, spriteX, 0, this.w, this.image.height, this.x, this.y, this.w, this.h);

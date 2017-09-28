@@ -2,6 +2,7 @@
 import { Back, DiamondsLabel, Ground, Dude, Diamond, RedDiamond, GreenDiamond, GoldenDiamond, Enemy  } from './tests'
 
 declare var gobalVars: any;
+window["gobalVars"] = {};
 
 var canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("theCanvas");
 var game = new Game(canvas);

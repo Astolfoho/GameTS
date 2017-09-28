@@ -112,4 +112,4 @@ var KeyCodes;
     KeyCodes[KeyCodes["closeBraket"] = 221] = "closeBraket";
     KeyCodes[KeyCodes["singleQuote"] = 222] = "singleQuote";
 })(KeyCodes || (KeyCodes = {}));
-//# sourceMappingURL=keyboard.js.map
+//# sourceMappingURL=KeyBoard.js.map
