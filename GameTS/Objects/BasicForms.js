@@ -1,18 +1,11 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+import { BaseObject } from './BaseObjects';
 var GameTS;
 (function (GameTS) {
     var Objects;
     (function (Objects) {
-        var Square = (function (_super) {
-            __extends(Square, _super);
-            function Square(width, height, x, y) {
-                if (x === void 0) { x = 10; }
-                if (y === void 0) { y = 10; }
-                _super.call(this);
+        class Square extends BaseObject {
+            constructor(width, height, x = 10, y = 10) {
+                super();
                 this.useGravity = true;
                 this.w = width;
                 this.h = height;
@@ -20,9 +13,9 @@ var GameTS;
                 this.y = y;
                 this.color = "black";
             }
-            Square.prototype.init = function () {
-            };
-            Square.prototype.render = function (context) {
+            init() {
+            }
+            render(context) {
                 if (this.useGravity) {
                     this.updatePositionWithGravity();
                 }
@@ -31,18 +24,14 @@ var GameTS;
                 }
                 context.strokeStyle = this.color;
                 context.strokeRect(this.x, this.y, this.w, this.h);
-            };
-            Square.prototype.onUpdate = function () {
-            };
-            return Square;
-        })(Objects.BaseObject);
+            }
+            onUpdate() {
+            }
+        }
         Objects.Square = Square;
-        var Square2 = (function (_super) {
-            __extends(Square2, _super);
-            function Square2(width, height, x, y) {
-                if (x === void 0) { x = 10; }
-                if (y === void 0) { y = 10; }
-                _super.call(this);
+        class Square2 extends BaseObject {
+            constructor(width, height, x = 10, y = 10) {
+                super();
                 this.useGravity = true;
                 this.w = width;
                 this.h = height;
@@ -50,9 +39,9 @@ var GameTS;
                 this.y = y;
                 this.color = "black";
             }
-            Square2.prototype.init = function () {
-            };
-            Square2.prototype.render = function (context) {
+            init() {
+            }
+            render(context) {
                 if (this.useGravity) {
                     this.updatePositionWithGravity();
                 }
@@ -78,11 +67,10 @@ var GameTS;
                 //context.strokeRect(this.x, this.y, this.width, this.height);
                 // we’re done with the rotating so restore the unrotated context
                 //context.restore();
-            };
-            Square2.prototype.onUpdate = function () {
-            };
-            return Square2;
-        })(Objects.BaseObject);
+            }
+            onUpdate() {
+            }
+        }
         Objects.Square2 = Square2;
     })(Objects = GameTS.Objects || (GameTS.Objects = {}));
 })(GameTS || (GameTS = {}));

@@ -1,1 +1,1 @@
-{"version":3,"file":"ICollisionHandler.js","sourceRoot":"","sources":["ICollisionHandler.ts"],"names":[],"mappings":"AAKC"}
+{"version":3,"file":"ICollisionHandler.js","sourceRoot":"","sources":["ICollisionHandler.ts"],"names":[],"mappings":"AA8BA,WAAY,eAMX;AAND,WAAY,eAAe;IACvB,qDAAQ,CAAA;IACR,qDAAQ,CAAA;IACR,uDAAS,CAAA;IACT,mDAAO,CAAA;IACP,yDAAU,CAAA;AACd,CAAC,EANW,eAAe,KAAf,eAAe,QAM1B"}

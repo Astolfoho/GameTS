@@ -1,6 +1,12 @@
-﻿module GameTS.Objects {
+﻿import { Mouse, IMouseObserver } from '../Controllers/Mouse';
 
-    export class DragableRectangle extends BaseObject implements GameTS.Controllers.IMouseObserver {
+import { BaseObject } from './BaseObjects'
+import { IDrawingContext } from '../Graphics/IDrawingContext'
+
+
+module GameTS.Objects {
+
+    export class DragableRectangle extends BaseObject implements IMouseObserver {
 
         public color: string;
 
@@ -28,8 +34,14 @@
         }
 
 
-        onMouseDown(mouse: Mouse): boolean;
-        onMouseUp(mouse: Mouse): boolean;
+        onMouseDown(mouse: Mouse): boolean {
+            return false;
+        }
+
+        onMouseUp(mouse: Mouse): boolean {
+            return false;
+        }
+
         onMouseMove(x: number, y: number) {
 
         }

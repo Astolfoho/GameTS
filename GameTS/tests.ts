@@ -1,4 +1,10 @@
-﻿
+﻿import Game from './Game'
+import { BaseObject } from './Objects/BaseObjects'
+import { Sprite } from './Objects/Sprite'
+import { RollSprite } from './Objects/RollSprite'
+import { Label } from './Objects/Label'
+import { TileSprite } from './Objects/TileSprite'
+import { AtlasSprite } from './Objects/AtlasSprite'
 
 var gobalVars = {
 
@@ -6,16 +12,15 @@ var gobalVars = {
     meters:0
 }
 
-class Square extends GameTS.Objects.BaseObject {
+class Square extends BaseObject {
 
-    public game: GameTS.Game;
+    public game: Game;
 
     public init(): void {
 
     }
 
     public render(context: CanvasRenderingContext2D): void {
-
         context.fillStyle = "red";
         context.fillRect(10, 10, 200, 200);
     }
@@ -26,13 +31,13 @@ class Square extends GameTS.Objects.BaseObject {
 }
 
 
-class Clock extends GameTS.Objects.BaseObject {
+export class Clock extends BaseObject {
 
     constructor() {
         super();
     }
 
-    public game: GameTS.Game;
+    public game: Game;
     public init(): void {
 
     }
@@ -53,7 +58,7 @@ class Clock extends GameTS.Objects.BaseObject {
 
 
 
-class Diamond extends GameTS.Objects.Sprite {
+export class Diamond extends Sprite {
 
     constructor(x: number, y: number) {
         super("/assets/diamond.png", x, y);
@@ -81,9 +86,10 @@ class Diamond extends GameTS.Objects.Sprite {
     }
 
     public onLoadComplete(): void {
-        this.collision.onCollision = (obj: GameTS.Objects.BaseObject) => {
+        this.collision.onCollision = (obj: BaseObject) => {
             if (obj instanceof Dude) {
-                obj.diamonds+=this.value;
+                var dude = <Dude>obj;
+                dude.diamonds+=this.value;
                 this.kill();
             }
         }
@@ -92,7 +98,7 @@ class Diamond extends GameTS.Objects.Sprite {
 }
 
 
-class Enemy extends GameTS.Objects.Sprite {
+export class Enemy extends Sprite {
 
     constructor(x: number, y: number) {
         super("/assets/ground-block.jpg", x, y);
@@ -111,7 +117,7 @@ class Enemy extends GameTS.Objects.Sprite {
     }
 
     public onLoadComplete(): void {
-        this.collision.onCollision = (obj: GameTS.Objects.BaseObject) => {
+        this.collision.onCollision = (obj: BaseObject) => {
             if (obj instanceof Dude) {
                 obj.kill();
                 this.game.stop();
@@ -122,7 +128,7 @@ class Enemy extends GameTS.Objects.Sprite {
 }
 
 
-class RedDiamond extends GameTS.Objects.Sprite {
+export class RedDiamond extends Sprite {
 
     constructor(x: number, y: number) {
         super("/assets/red-diamond.png", x, y);
@@ -150,7 +156,7 @@ class RedDiamond extends GameTS.Objects.Sprite {
     }
 
     public onLoadComplete(): void {
-        this.collision.onCollision = (obj: GameTS.Objects.BaseObject) => {
+        this.collision.onCollision = (obj: BaseObject) => {
             if (obj instanceof Dude) {
                 obj.diamonds += this.value;
                 this.kill();
@@ -160,7 +166,7 @@ class RedDiamond extends GameTS.Objects.Sprite {
 
 }
 
-class GreenDiamond extends GameTS.Objects.Sprite {
+export class GreenDiamond extends Sprite {
 
     constructor(x: number, y: number) {
         super("/assets/green-diamond.png", x, y);
@@ -186,7 +192,7 @@ class GreenDiamond extends GameTS.Objects.Sprite {
     }
 
     public onLoadComplete(): void {
-        this.collision.onCollision = (obj: GameTS.Objects.BaseObject) => {
+        this.collision.onCollision = (obj: BaseObject) => {
             if (obj instanceof Dude) {
                 obj.diamonds += this.value;
                 this.kill();
@@ -197,7 +203,7 @@ class GreenDiamond extends GameTS.Objects.Sprite {
 }
 
 
-class GoldenDiamond extends GameTS.Objects.Sprite {
+export class GoldenDiamond extends Sprite {
 
     constructor(x: number, y: number) {
         super("/assets/golden-diamond.png", x, y);
@@ -224,7 +230,7 @@ class GoldenDiamond extends GameTS.Objects.Sprite {
     }
 
     public onLoadComplete(): void {
-        this.collision.onCollision = (obj: GameTS.Objects.BaseObject) => {
+        this.collision.onCollision = (obj: BaseObject) => {
             if (obj instanceof Dude) {
                 obj.diamonds += this.value;
                 this.kill();
@@ -234,7 +240,7 @@ class GoldenDiamond extends GameTS.Objects.Sprite {
 
 }
 
-class DiamondsLabel extends GameTS.Objects.Label {
+export class DiamondsLabel extends Label {
 
     constructor() {
         super("0");
@@ -255,7 +261,7 @@ class DiamondsLabel extends GameTS.Objects.Label {
     }
 }
 
-class MetersLabel extends GameTS.Objects.Label {
+export class MetersLabel extends Label {
 
     constructor() {
         super("0");
@@ -276,7 +282,7 @@ class MetersLabel extends GameTS.Objects.Label {
 
 
 
-class Back extends GameTS.Objects.RollSprite {
+export class Back extends RollSprite {
 
     constructor() {
         super("/assets/platformer_background_M.png", 0, 0);
@@ -304,7 +310,7 @@ class Back extends GameTS.Objects.RollSprite {
 
 }
 
-class Dude extends GameTS.Objects.TileSprite {
+export class Dude extends TileSprite {
 
     constructor() {
         super("/assets/dude.png", 300, 70, 31, 5);
@@ -316,7 +322,7 @@ class Dude extends GameTS.Objects.TileSprite {
     public diamonds: number = 0;
 
     public onLoadComplete(): void {
-        this.collision.onCollision = (obj: GameTS.Objects.BaseObject) => {
+        this.collision.onCollision = (obj: BaseObject) => {
             if (obj instanceof Diamond) {
                 this.diamonds++;
                 obj.kill();
@@ -349,7 +355,7 @@ class Dude extends GameTS.Objects.TileSprite {
 
 }
 
-class Pos extends GameTS.Objects.Label {
+export class Pos extends Label {
 
     constructor() {
         super("");
@@ -382,7 +388,7 @@ class Pos extends GameTS.Objects.Label {
 
 }
 
-class Ground extends GameTS.Objects.RollSprite {
+export class Ground extends RollSprite {
 
     constructor() {
         super("/assets/ground-block.jpg", 0, 0, 0, 0,true,"repeat-x");
@@ -415,7 +421,7 @@ class Ground extends GameTS.Objects.RollSprite {
 
 
 
-class Luffy extends GameTS.Objects.AtlasSprite {
+export class Luffy extends AtlasSprite {
 
     constructor() {
         super("/assets/luffy.png", "/assets/luffy.json");

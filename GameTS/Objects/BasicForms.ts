@@ -1,4 +1,5 @@
-﻿
+﻿import { BaseObject } from './BaseObjects'
+import { IDrawingContext } from '../Graphics/IDrawingContext'
 
 module GameTS.Objects {
 
@@ -21,7 +22,7 @@ module GameTS.Objects {
         public init(): void {
 
         }
-        public render(context: CanvasRenderingContext2D): void {
+        public render(context: IDrawingContext): void {
             if (this.useGravity) {
                 this.updatePositionWithGravity();
             } else {
@@ -56,7 +57,7 @@ module GameTS.Objects {
         public init(): void {
 
         }
-        public render(context: Graphics.IDrawingContext): void {
+        public render(context: IDrawingContext): void {
             if (this.useGravity) {
                 this.updatePositionWithGravity();
             } else {

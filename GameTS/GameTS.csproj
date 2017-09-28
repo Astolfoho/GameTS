@@ -20,7 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <TypeScriptToolsVersion>1.7</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
     <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -31,6 +31,20 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TypeScriptTarget>ES6</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptModuleKind>
+    </TypeScriptModuleKind>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile />
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -64,6 +78,7 @@
     <Content Include="assets\green-diamond.png" />
     <Content Include="assets\ground-block.jpg" />
     <Content Include="assets\luffy.json" />
+    <Content Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -84,8 +99,11 @@
     <Content Include="assets\sky.png" />
     <Content Include="assets\star.png" />
     <TypeScriptCompile Include="Controllers\Mouse.ts" />
+    <TypeScriptCompile Include="Index.ts" />
     <TypeScriptCompile Include="Objects\AtlasSprite.ts" />
     <Content Include="Index.html" />
+    <Content Include="Scripts\r.js" />
+    <Content Include="Scripts\require.js" />
     <Content Include="TextFile1.txt" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -99,20 +117,17 @@
     <TypeScriptCompile Include="Objects\DragableRectangle.ts" />
     <TypeScriptCompile Include="Objects\NumberOfObjects.ts" />
     <TypeScriptCompile Include="Objects\FPSLabel.ts" />
-    <TypeScriptCompile Include="Objects\BaseObject.ts" />
+    <TypeScriptCompile Include="Objects\BaseObjects.ts" />
     <TypeScriptCompile Include="Objects\IAtlas.d.ts" />
     <TypeScriptCompile Include="Objects\Label.ts" />
     <TypeScriptCompile Include="Objects\RollSprite.ts" />
     <TypeScriptCompile Include="Objects\Sprite.ts" />
     <TypeScriptCompile Include="Objects\TileSprite.ts" />
-    <TypeScriptCompile Include="Objects\Velocity.ts" />
     <TypeScriptCompile Include="Global.d.ts" />
     <TypeScriptCompile Include="Graphics\DrawingContext2D.ts" />
     <TypeScriptCompile Include="Graphics\IDrawingContext.ts" />
     <TypeScriptCompile Include="Physics\BasicCollisionHandler.ts" />
-    <TypeScriptCompile Include="Physics\ICollisionHandler.d.ts" />
     <TypeScriptCompile Include="tests.ts" />
-    <TypeScriptCompile Include="_references.ts" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -140,6 +155,9 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>call "rollup Index.js --o  bundle.js -f es"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
