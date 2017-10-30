@@ -71,7 +71,6 @@ export abstract class TileSprite extends BaseObject {
     }
 
     public render(context: IDrawingContext): void {
-        this.onUpdate();
 
         if (this.currentAnimation != this.lastRederedAnimation || !this.lastRederedAnimation) {
             this.resetAnimation();

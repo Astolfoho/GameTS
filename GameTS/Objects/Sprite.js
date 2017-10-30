@@ -21,7 +21,6 @@ export class Sprite extends BaseObject {
         super.init();
     }
     render(context) {
-        this.onUpdate();
         if (!this.repeat) {
             context.drawImage(this.image, 0, 0, this.image.width, this.image.height, this.x, this.y, this.w, this.h);
         }

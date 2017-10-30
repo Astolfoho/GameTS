@@ -70,6 +70,7 @@ export abstract class BaseObject implements IPosition, ISize {
 
     public preRender(context: IDrawingContext, timestep: number): void {
         this.timestep = timestep / 1000;
+        this.onUpdate();
         this.render(context);
     }
 

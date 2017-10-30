@@ -387,7 +387,7 @@ class Game {
 
 class BasicCollisionHandler {
     constructor(obj) {
-        this.fullCollision = true;
+        this.fullCollision = false;
         this.obj = obj;
         this._cells = [];
         this._objsToCollide = [];
@@ -628,6 +628,7 @@ class BaseObject {
     ;
     preRender(context, timestep) {
         this.timestep = timestep / 1000;
+        this.onUpdate();
         this.render(context);
     }
     updatePosition(objToUpdate = this) {
@@ -710,7 +711,6 @@ class Sprite extends BaseObject {
         super.init();
     }
     render(context) {
-        this.onUpdate();
         if (!this.repeat) {
             context.drawImage(this.image, 0, 0, this.image.width, this.image.height, this.x, this.y, this.w, this.h);
         }
@@ -762,7 +762,6 @@ class RollSprite extends BaseObject {
         this.rollPosition = { x: this.x, y: this.y };
     }
     render(context) {
-        this.onUpdate();
         this.imgPattern = this.imgPattern || context.createPattern(this.auxCanvas || this.image, this.repeat);
         context.fillStyle = this.imgPattern;
         // context.save();
@@ -794,39 +793,6 @@ class RollSprite extends BaseObject {
 //declare interface HTMLImageElement {
 //    isReady: boolean;
 //}
-class Label extends BaseObject {
-    constructor(text, color = "black", iconUrl, iconSize, fontSize = 15, useCollisionHandler = false) {
-        super(useCollisionHandler);
-        this.fontName = "arial";
-        this.text = text;
-        this.color = color;
-        this.iconUrl = iconUrl;
-        this.iconSize = iconSize;
-        this.fontSize = fontSize;
-    }
-    init() {
-        if (this.iconUrl) {
-            this._img = document.createElement("img");
-            this._img.onload = () => { this.img_OnLoad(); };
-            this._img.src = this.iconUrl;
-        }
-    }
-    img_OnLoad() {
-        this._img["isReady"] = true;
-        if (!this.iconSize) {
-            this.iconSize = { w: this._img.width, h: this._img.height };
-        }
-    }
-    render(context) {
-        this.onUpdate();
-        if (this._img && this._img["isReady"]) {
-            context.drawImage(this._img, 0, 0, this._img.width, this._img.height, this.x - this.iconSize.w - 5, (this.y), this.iconSize.w, this.iconSize.h);
-        }
-        context.font = "bold " + this.fontSize.toString() + "px " + this.fontName;
-        context.fillStyle = this.color;
-        context.fillText(this.text, this.x, this.y + 15, context.measureText(this.text).width);
-    }
-}
 
 class TileSprite extends BaseObject {
     constructor(url, x, y, width, duraion, height) {
@@ -875,7 +841,6 @@ class TileSprite extends BaseObject {
         this.nextSprite = 0;
     }
     render(context) {
-        this.onUpdate();
         if (this.currentAnimation != this.lastRederedAnimation || !this.lastRederedAnimation) {
             this.resetAnimation();
         }
@@ -898,7 +863,83 @@ class TileSprite extends BaseObject {
     }
 }
 
-var gobalVars$1 = {
+class AtlasSprite extends BaseObject {
+    constructor(imageUrl, atlasJsonUrl, useCollisionHandler = false) {
+        super(useCollisionHandler);
+        this.imageUrl = imageUrl;
+        this.atlasJsonUrl = atlasJsonUrl;
+        this.animations = {};
+    }
+    init() {
+        this.image = document.createElement("img");
+        this.image.src = this.imageUrl;
+        var animRegex = /^([0-9a-z-]*)\/(.*)$/i;
+        var json = this.game.getJsonSync(this.atlasJsonUrl);
+        this.atlasObj = JSON.parse(json);
+        for (var key in this.atlasObj.frames) {
+            var it = this.atlasObj.frames[key];
+            if (animRegex.test(it.filename)) {
+                var mat = animRegex.exec(it.filename);
+                var name = mat[1];
+                var index = parseInt(mat[2]) - 1;
+                if (isNaN(index)) {
+                    continue;
+                }
+                if (this.animations[name]) {
+                    this.animations[name]["frames"][index] = this.atlasObj.frames[key];
+                }
+                else {
+                    this.animations[name] = new AtlasAnimation();
+                    this.animations[name]["frames"][index] = this.atlasObj.frames[key];
+                }
+            }
+        }
+        if (this.currentAnimationName) {
+            this.setAnimation(this.currentAnimationName, this.currentAnimationDuration);
+        }
+    }
+    setAnimation(name, duration = 0) {
+        this.currentAnimationName = name;
+        this.currentAnimationDuration = duration;
+        if (this.animations[name] && this.currentAnimation != this.animations[name]) {
+            this.currentAnimation = this.animations[name];
+            this.currentAnimation.durationPerFrame = duration;
+            this.currentAnimation.reset();
+        }
+    }
+    render(context) {
+        if (this.currentAnimation) {
+            var fr = this.currentAnimation.getNextFrame();
+            this.w = fr.sourceSize.w;
+            this.h = fr.sourceSize.h;
+            context.drawImage(this.image, fr.frame.x, fr.frame.y, fr.frame.w, fr.frame.h, this.x, this.y, fr.frame.w, fr.frame.h);
+        }
+    }
+}
+class AtlasAnimation {
+    constructor() {
+        this.frames = [];
+        this.position = -1;
+        this.durationCount = 0;
+    }
+    getNextFrame() {
+        this.durationCount--;
+        if (this.durationCount < 1) {
+            this.position++;
+            if (this.position > this.frames.length - 1) {
+                this.position = 0;
+            }
+            this.durationCount = this.durationPerFrame;
+        }
+        return this.frames[this.position];
+    }
+    reset() {
+        this.position = -1;
+        this.durationCount = 0;
+    }
+}
+
+var gobalVars = {
     baseVelocity: 300,
     meters: 0
 };
@@ -910,7 +951,7 @@ class Diamond extends Sprite {
         this.cacheKey = "diamond";
     }
     onUpdate() {
-        this.velocity.x = -gobalVars$1.baseVelocity;
+        this.velocity.x = -gobalVars.baseVelocity;
         //if (this.game.keyboard.rightArrow) {
         //    this.velocity.x = -config.baseVelocity;
         //} else if (this.game.keyboard.leftArrow) {
@@ -933,152 +974,27 @@ class Diamond extends Sprite {
         };
     }
 }
-class Enemy extends Sprite {
-    constructor(x, y) {
-        super("/assets/ground-block.jpg", x, y);
-        this.value = 1;
-        this.cacheKey = "diamond";
-    }
-    onUpdate() {
-        this.velocity.x = -gobalVars$1.baseVelocity;
-        this.updatePosition();
-        if (this.x < -100) {
-            this.kill();
-        }
-    }
-    onLoadComplete() {
-        this.collision.onCollision = (obj) => {
-            if (obj instanceof Dude) {
-                obj.kill();
-                this.game.stop();
-            }
-        };
-    }
-}
-class RedDiamond extends Sprite {
-    constructor(x, y) {
-        super("/assets/red-diamond.png", x, y);
-        this.value = 10;
-        this.cacheKey = "diamond";
-    }
-    onUpdate() {
-        this.velocity.x = -gobalVars$1.baseVelocity;
-        //if (this.game.keyboard.rightArrow) {
-        //    this.velocity.x = -config.baseVelocity;
-        //} else if (this.game.keyboard.leftArrow) {
-        //    this.velocity.x = config.baseVelocity;
-        //} else {
-        //    this.velocity.x = 0;
-        //}
-        this.updatePosition();
-        if (this.x < -100) {
-            this.kill();
-        }
-    }
-    onLoadComplete() {
-        this.collision.onCollision = (obj) => {
-            if (obj instanceof Dude) {
-                obj.diamonds += this.value;
-                this.kill();
-            }
-        };
-    }
-}
-class GreenDiamond extends Sprite {
-    constructor(x, y) {
-        super("/assets/green-diamond.png", x, y);
-        this.value = 100;
-        this.cacheKey = "diamond";
-    }
-    onUpdate() {
-        this.velocity.x = -gobalVars$1.baseVelocity;
-        //if (this.game.keyboard.rightArrow) {
-        //    this.velocity.x = -config.baseVelocity;
-        //} else if (this.game.keyboard.leftArrow) {
-        //    this.velocity.x = config.baseVelocity;
-        //} else {
-        //    this.velocity.x = 0;
-        //}
-        this.updatePosition();
-        if (this.x < -100) {
-            this.kill();
-        }
-    }
-    onLoadComplete() {
-        this.collision.onCollision = (obj) => {
-            if (obj instanceof Dude) {
-                obj.diamonds += this.value;
-                this.kill();
-            }
-        };
-    }
-}
-class GoldenDiamond extends Sprite {
-    constructor(x, y) {
-        super("/assets/golden-diamond.png", x, y);
-        this.value = 100;
-        this.cacheKey = "diamond";
-    }
-    onUpdate() {
-        this.velocity.x = -gobalVars$1.baseVelocity;
-        //if (this.game.keyboard.rightArrow) {
-        //    this.velocity.x = -config.baseVelocity;
-        //} else if (this.game.keyboard.leftArrow) {
-        //    this.velocity.x = config.baseVelocity;
-        //} else {
-        //    this.velocity.x = 0;
-        //}
-        if (this.x < -100) {
-            this.kill();
-        }
-        this.updatePosition();
-    }
-    onLoadComplete() {
-        this.collision.onCollision = (obj) => {
-            if (obj instanceof Dude) {
-                obj.diamonds += this.value;
-                this.kill();
-            }
-        };
-    }
-}
-class DiamondsLabel extends Label {
-    constructor() {
-        super("0");
-    }
-    init() {
-        this.iconUrl = "/assets/diamond.png";
-        this.y = 5;
-        this.x = this.game.w - 100;
-        this.iconSize = { h: 20, w: 20 };
-        super.init();
-    }
-    onUpdate() {
-        if (window["dude"]) {
-            this.text = window["dude"].diamonds.toString();
-        }
-    }
-}
 
-class Back extends RollSprite {
+
+
+
+
+
+
+class SolidColorBack extends BaseObject {
     constructor() {
-        super("/assets/platformer_background_M.png", 0, 0);
+        super(false);
     }
     init() {
-        this.w = 0;
+        this.w = this.game.w;
         this.h = this.game.h;
         super.init();
     }
+    render(context) {
+        context.fillStyle = this.color;
+        context.fillRect(0, 0, this.w, this.h);
+    }
     onUpdate() {
-        //if (this.game.keyboard.rightArrow) {
-        //    this.velocity.x = -config.baseVelocity/2;
-        //} else if (this.game.keyboard.leftArrow) {
-        //    this.velocity.x = config.baseVelocity/2;
-        //} else {
-        //    this.velocity.x = 0;
-        //}
-        this.velocity.x = -gobalVars$1.baseVelocity;
-        this.updatePosition();
     }
 }
 class Dude extends TileSprite {
@@ -1098,7 +1014,7 @@ class Dude extends TileSprite {
         };
     }
     onUpdate() {
-        this.setAnimation("right");
+        this.setAnimation("stopped");
         this.velocity.x = 0;
         if (this.game.keyboard.rightArrow) {
             this.setAnimation("right");
@@ -1119,6 +1035,7 @@ class Dude extends TileSprite {
 class Ground extends RollSprite {
     constructor() {
         super("/assets/ground-block.jpg", 0, 0, 0, 0, true, "repeat-x");
+        this.baseVelocity = 100;
     }
     init() {
         this.collision.fullCollision = false;
@@ -1126,72 +1043,109 @@ class Ground extends RollSprite {
         this.h = 32;
         this.y = this.game.h - this.h;
         super.init();
-        this.collision.onUpdate = () => window["dude"].collision.update();
+        //this.collision.onUpdate = () => window["dude"].collision.update();
     }
     onUpdate() {
-        //if (this.game.keyboard.rightArrow) {
-        //    this.velocity.x = -config.baseVelocity;
-        //} else if (this.game.keyboard.leftArrow) {
-        //    this.velocity.x = config.baseVelocity;  
-        //} else {
-        //    this.velocity.x = 0;
-        //}
-        this.velocity.x = -gobalVars$1.baseVelocity;
+        if (this.game.keyboard.rightArrow) {
+        }
+        else if (this.game.keyboard.leftArrow) {
+        }
+        else {
+            this.velocity.x = 0;
+        }
+        //this.velocity.x = -gobalVars.baseVelocity;
         this.updatePosition();
+    }
+}
+class Luffy extends AtlasSprite {
+    constructor() {
+        super("/assets/luffy.png", "/assets/luffy.json", true);
+        this._isRight = true;
+        this.x = 100;
+        this.y = 100;
+        this.h = 50;
+        this.setAnimation("stopedright", 7);
+    }
+    onUpdate() {
+        this.updatePositionWithGravity();
+        var animation = "";
+        if (this.game.keyboard.d) {
+            this._isRight = true;
+            animation = "running-right";
+            this.velocity.x = 250;
+        }
+        else if (this.game.keyboard.a) {
+            this._isRight = false;
+            animation = "running-left";
+            this.velocity.x = -250;
+        }
+        else {
+            if (this._isRight) {
+                animation = "stopedright";
+            }
+            else {
+                animation = "stopedleft";
+            }
+            this.velocity.x = 0;
+        }
+        if (animation && this.collision.bottom) {
+            this.setAnimation(animation, 7);
+        }
+        if (this.collision.bottom && (this.game.keyboard.w)) {
+            if (this._isRight) {
+                this.setAnimation("jump-right", 10);
+            }
+            else {
+                this.setAnimation("jump-left", 10);
+            }
+            this.velocity.y = -450;
+        }
+    }
+}
+
+class PropertiesView extends BaseObject {
+    constructor(obj, x, y) {
+        super(false);
+        this._lineH = 12;
+        this._obj = obj;
+        this.x = x;
+        this.y = y;
+    }
+    render(context) {
+        var i = 1;
+        var keys = Object.getOwnPropertyNames(this._obj);
+        context.strokeStyle = "white";
+        context.strokeRect(this.x - 7, this.y, 250, keys.length * this._lineH + 7);
+        context.fillStyle = "rgba(255,255,255,.4)";
+        context.fillRect(this.x - 7, this.y, 250, keys.length * this._lineH + 7);
+        for (var i = 0; i < keys.length; i++) {
+            var iplus = i + 1;
+            var lineY = iplus * this._lineH + this.y;
+            context.fillStyle = "black";
+            context.fillText(`${keys[i]}:${this._obj[keys[i]]}`, this.x, lineY);
+        }
+    }
+    onUpdate() {
     }
 }
 
 window["gobalVars"] = {};
 var canvas = document.getElementById("theCanvas");
 var game = new Game(canvas);
-var back = new Back();
+var back = new SolidColorBack();
+back.color = "cornflowerblue";
 game.addObject(back);
-var dl = new DiamondsLabel();
-game.addObject(dl);
 var ground = new Ground();
 game.addObject(ground);
+var luffy = new Luffy();
+luffy.colide(ground);
+game.addObject(luffy);
 var dude = new Dude();
-game.addObject(dude);
 dude.colide(ground);
+game.addObject(dude);
 game.start();
-var lastAdd = null;
-function addDiamonds() {
-    if ((lastAdd == null || (-ground.rollPosition.x - lastAdd) > 100)) {
-        var y = getRandomInt(10, this.game.h - 120);
-        var x = game.w + 10;
-        var d = new Diamond(x, y);
-        d.colide(dude);
-        game.addObject(d);
-        var d = new RedDiamond(x + 50, y);
-        d.colide(dude);
-        game.addObject(d);
-        var d = new GreenDiamond(x, y + 50);
-        d.colide(dude);
-        game.addObject(d);
-        var d = new GoldenDiamond(x + 50, y + 50);
-        d.colide(dude);
-        game.addObject(d);
-        lastAdd = -ground.rollPosition.x;
-        gobalVars.baseVelocity += 2;
-        y = getRandomInt(10, this.game.h - 120);
-        x = game.w + 10;
-        var d = new Enemy(x, y);
-        d.colide(dude);
-        game.addObject(d);
-    }
-    gobalVars.meters = Math.floor((-ground.rollPosition.x) / 100);
-}
-addDiamonds();
-setInterval(addDiamonds, 100);
-var d = new Diamond(10, 550);
-d.colide(dude);
-game.addObject(d);
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-//var a = new FPSLabel();
-//game.addObject(a);
-//var a = new NumberOfObjects();
-//game.addObject(a);
-//var a = new MetersLabel();
-//game.addObject(a);
+dude.colide(luffy);
+var pv = new PropertiesView(luffy.collision, 10, 10);
+game.addObject(pv);
+var pv = new PropertiesView(dude.collision, 300, 10);
+game.addObject(pv);

@@ -15,8 +15,8 @@ export abstract class AtlasSprite extends BaseObject {
     private currentAnimationName: string;
     private currentAnimationDuration: number;
 
-    constructor(imageUrl: string, atlasJsonUrl: string) {
-        super();
+    constructor(imageUrl: string, atlasJsonUrl: string, useCollisionHandler: boolean = false) {
+        super(useCollisionHandler);
         this.imageUrl = imageUrl;
         this.atlasJsonUrl = atlasJsonUrl;
         this.animations = {};
@@ -69,9 +69,6 @@ export abstract class AtlasSprite extends BaseObject {
     }
 
     public render(context: IDrawingContext): void {
-        this.onUpdate();
-
-
         if (this.currentAnimation) {
             var fr = this.currentAnimation.getNextFrame();
             this.w = fr.sourceSize.w;

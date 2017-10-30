@@ -20,7 +20,7 @@ export class BasicCollisionHandler implements ICollisionHandler {
 
     public current: CollisionResult;
 
-    public fullCollision: boolean = true;
+    public fullCollision: boolean = false;
 
     public onUpdate: UpdateCallback;
 

@@ -1,7 +1,7 @@
 import { BaseObject } from './BaseObjects';
 export class AtlasSprite extends BaseObject {
-    constructor(imageUrl, atlasJsonUrl) {
-        super();
+    constructor(imageUrl, atlasJsonUrl, useCollisionHandler = false) {
+        super(useCollisionHandler);
         this.imageUrl = imageUrl;
         this.atlasJsonUrl = atlasJsonUrl;
         this.animations = {};
@@ -44,7 +44,6 @@ export class AtlasSprite extends BaseObject {
         }
     }
     render(context) {
-        this.onUpdate();
         if (this.currentAnimation) {
             var fr = this.currentAnimation.getNextFrame();
             this.w = fr.sourceSize.w;

@@ -1,6 +1,6 @@
 export class BasicCollisionHandler {
     constructor(obj) {
-        this.fullCollision = true;
+        this.fullCollision = false;
         this.obj = obj;
         this._cells = [];
         this._objsToCollide = [];

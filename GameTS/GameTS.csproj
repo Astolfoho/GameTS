@@ -99,6 +99,7 @@
     <Content Include="assets\sky.png" />
     <Content Include="assets\star.png" />
     <TypeScriptCompile Include="Controllers\Mouse.ts" />
+    <TypeScriptCompile Include="Indexold.ts" />
     <TypeScriptCompile Include="Index.ts" />
     <TypeScriptCompile Include="Objects\AtlasSprite.ts" />
     <Content Include="Index.html" />
@@ -120,6 +121,7 @@
     <TypeScriptCompile Include="Objects\BaseObjects.ts" />
     <TypeScriptCompile Include="Objects\IAtlas.d.ts" />
     <TypeScriptCompile Include="Objects\Label.ts" />
+    <TypeScriptCompile Include="Objects\PropertiesView.ts" />
     <TypeScriptCompile Include="Objects\RollSprite.ts" />
     <TypeScriptCompile Include="Objects\Sprite.ts" />
     <TypeScriptCompile Include="Objects\TileSprite.ts" />
@@ -156,7 +158,7 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>call "rollup Index.js --o  bundle.js -f es"</PostBuildEvent>
+    <PostBuildEvent>call rollup Index.js --o  bundle.js -f es</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -46,7 +46,6 @@ export class TileSprite extends BaseObject {
         this.nextSprite = 0;
     }
     render(context) {
-        this.onUpdate();
         if (this.currentAnimation != this.lastRederedAnimation || !this.lastRederedAnimation) {
             this.resetAnimation();
         }

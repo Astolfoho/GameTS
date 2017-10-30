@@ -34,6 +34,7 @@ export class BaseObject {
     ;
     preRender(context, timestep) {
         this.timestep = timestep / 1000;
+        this.onUpdate();
         this.render(context);
     }
     updatePosition(objToUpdate = this) {

@@ -26,7 +26,6 @@ export class Label extends BaseObject {
         }
     }
     render(context) {
-        this.onUpdate();
         if (this._img && this._img["isReady"]) {
             context.drawImage(this._img, 0, 0, this._img.width, this._img.height, this.x - this.iconSize.w - 5, (this.y), this.iconSize.w, this.iconSize.h);
         }

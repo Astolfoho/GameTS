@@ -35,7 +35,6 @@ export abstract class Sprite extends BaseObject {
     }
 
     public render(context: IDrawingContext): void {
-        this.onUpdate();
 
         if (!this.repeat) {
             context.drawImage(this.image, 0, 0, this.image.width, this.image.height, this.x, this.y, this.w, this.h);

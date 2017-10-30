@@ -52,7 +52,6 @@ export abstract class RollSprite extends BaseObject {
     }
 
     public render(context: IDrawingContext): void {
-        this.onUpdate();
         this.imgPattern = this.imgPattern || context.createPattern(this.auxCanvas || this.image, this.repeat);
 
         context.fillStyle = this.imgPattern;

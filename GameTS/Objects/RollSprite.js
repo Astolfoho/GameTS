@@ -37,7 +37,6 @@ export class RollSprite extends BaseObject {
         this.rollPosition = { x: this.x, y: this.y };
     }
     render(context) {
-        this.onUpdate();
         this.imgPattern = this.imgPattern || context.createPattern(this.auxCanvas || this.image, this.repeat);
         context.fillStyle = this.imgPattern;
         // context.save();

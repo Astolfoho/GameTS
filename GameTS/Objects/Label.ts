@@ -44,18 +44,11 @@ export abstract class Label extends BaseObject {
     }
 
     public render(context: IDrawingContext): void {
-        this.onUpdate();
-
         if (this._img && this._img["isReady"]) {
             context.drawImage(this._img, 0, 0, this._img.width, this._img.height, this.x - this.iconSize.w - 5, (this.y), this.iconSize.w, this.iconSize.h);
         }
-
-
         context.font = "bold " + this.fontSize.toString() + "px " + this.fontName;
         context.fillStyle = this.color;
         context.fillText(this.text, this.x, this.y + 15, context.measureText(this.text).width);
-
-
-
     }
 } 

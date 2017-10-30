@@ -222,6 +222,22 @@ export class Back extends RollSprite {
         this.updatePosition();
     }
 }
+export class SolidColorBack extends BaseObject {
+    constructor() {
+        super(false);
+    }
+    init() {
+        this.w = this.game.w;
+        this.h = this.game.h;
+        super.init();
+    }
+    render(context) {
+        context.fillStyle = this.color;
+        context.fillRect(0, 0, this.w, this.h);
+    }
+    onUpdate() {
+    }
+}
 export class Dude extends TileSprite {
     constructor() {
         super("/assets/dude.png", 300, 70, 31, 5);
@@ -239,7 +255,7 @@ export class Dude extends TileSprite {
         };
     }
     onUpdate() {
-        this.setAnimation("right");
+        this.setAnimation("stopped");
         this.velocity.x = 0;
         if (this.game.keyboard.rightArrow) {
             this.setAnimation("right");
@@ -290,6 +306,7 @@ export class Pos extends Label {
 export class Ground extends RollSprite {
     constructor() {
         super("/assets/ground-block.jpg", 0, 0, 0, 0, true, "repeat-x");
+        this.baseVelocity = 100;
     }
     init() {
         this.collision.fullCollision = false;
@@ -297,44 +314,62 @@ export class Ground extends RollSprite {
         this.h = 32;
         this.y = this.game.h - this.h;
         super.init();
-        this.collision.onUpdate = () => window["dude"].collision.update();
+        //this.collision.onUpdate = () => window["dude"].collision.update();
     }
     onUpdate() {
-        //if (this.game.keyboard.rightArrow) {
-        //    this.velocity.x = -config.baseVelocity;
-        //} else if (this.game.keyboard.leftArrow) {
-        //    this.velocity.x = config.baseVelocity;  
-        //} else {
-        //    this.velocity.x = 0;
-        //}
-        this.velocity.x = -gobalVars.baseVelocity;
+        if (this.game.keyboard.rightArrow) {
+        }
+        else if (this.game.keyboard.leftArrow) {
+        }
+        else {
+            this.velocity.x = 0;
+        }
+        //this.velocity.x = -gobalVars.baseVelocity;
         this.updatePosition();
     }
 }
 export class Luffy extends AtlasSprite {
     constructor() {
-        super("/assets/luffy.png", "/assets/luffy.json");
+        super("/assets/luffy.png", "/assets/luffy.json", true);
+        this._isRight = true;
         this.x = 100;
         this.y = 100;
         this.h = 50;
-        this.setAnimation("stopedright", 5);
+        this.setAnimation("stopedright", 7);
     }
     onUpdate() {
         this.updatePositionWithGravity();
+        var animation = "";
         if (this.game.keyboard.d) {
-            this.setAnimation("running-right", 6);
-            this.velocity.x = 2;
+            this._isRight = true;
+            animation = "running-right";
+            this.velocity.x = 250;
         }
         else if (this.game.keyboard.a) {
-            this.setAnimation("running-left", 6);
-            this.velocity.x = -2;
+            this._isRight = false;
+            animation = "running-left";
+            this.velocity.x = -250;
         }
         else {
+            if (this._isRight) {
+                animation = "stopedright";
+            }
+            else {
+                animation = "stopedleft";
+            }
             this.velocity.x = 0;
-            this.setAnimation("stopedright", 6);
         }
-        if (this.isTouchingGround && (this.game.keyboard.w)) {
-            this.velocity.y = -10;
+        if (animation && this.collision.bottom) {
+            this.setAnimation(animation, 7);
+        }
+        if (this.collision.bottom && (this.game.keyboard.w)) {
+            if (this._isRight) {
+                this.setAnimation("jump-right", 10);
+            }
+            else {
+                this.setAnimation("jump-left", 10);
+            }
+            this.velocity.y = -450;
         }
     }
 }

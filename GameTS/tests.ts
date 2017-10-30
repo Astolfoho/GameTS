@@ -5,11 +5,13 @@ import { RollSprite } from './Objects/RollSprite'
 import { Label } from './Objects/Label'
 import { TileSprite } from './Objects/TileSprite'
 import { AtlasSprite } from './Objects/AtlasSprite'
+import { IDrawingContext } from './Graphics/IDrawingContext'
+
 
 var gobalVars = {
 
     baseVelocity: 300,
-    meters:0
+    meters: 0
 }
 
 class Square extends BaseObject {
@@ -20,7 +22,7 @@ class Square extends BaseObject {
 
     }
 
-    public render(context: CanvasRenderingContext2D): void {
+    public render(context: IDrawingContext): void {
         context.fillStyle = "red";
         context.fillRect(10, 10, 200, 200);
     }
@@ -42,7 +44,7 @@ export class Clock extends BaseObject {
 
     }
 
-    public render(context: CanvasRenderingContext2D): void {
+    public render(context: IDrawingContext): void {
         var now = new Date();
 
         context.fillStyle = "black";
@@ -65,7 +67,7 @@ export class Diamond extends Sprite {
         this.cacheKey = "diamond";
     }
 
-    public value:number = 1;
+    public value: number = 1;
 
     public onUpdate() {
 
@@ -89,7 +91,7 @@ export class Diamond extends Sprite {
         this.collision.onCollision = (obj: BaseObject) => {
             if (obj instanceof Dude) {
                 var dude = <Dude>obj;
-                dude.diamonds+=this.value;
+                dude.diamonds += this.value;
                 this.kill();
             }
         }
@@ -310,6 +312,32 @@ export class Back extends RollSprite {
 
 }
 
+
+export class SolidColorBack extends BaseObject {
+
+    public color: string;
+
+    constructor() {
+        super(false)
+    }
+
+    public init(): void {
+        this.w = this.game.w;
+        this.h = this.game.h;
+        super.init();
+    }
+
+    public render(context: IDrawingContext): void {
+        context.fillStyle = this.color;
+        context.fillRect(0, 0, this.w, this.h);
+    }
+
+    public onUpdate() {
+
+    }
+
+}
+
 export class Dude extends TileSprite {
 
     constructor() {
@@ -326,14 +354,14 @@ export class Dude extends TileSprite {
             if (obj instanceof Diamond) {
                 this.diamonds++;
                 obj.kill();
-             }
+            }
         }
 
     }
 
     public onUpdate() {
 
-        this.setAnimation("right");
+        this.setAnimation("stopped");
         this.velocity.x = 0;
 
         if (this.game.keyboard.rightArrow) {
@@ -349,7 +377,6 @@ export class Dude extends TileSprite {
         }
         ////console.log(this.checkCollision());
         this.updatePositionWithGravity();
-
 
     }
 
@@ -390,30 +417,32 @@ export class Pos extends Label {
 
 export class Ground extends RollSprite {
 
+    private baseVelocity = 100;
+
     constructor() {
-        super("/assets/ground-block.jpg", 0, 0, 0, 0,true,"repeat-x");
+        super("/assets/ground-block.jpg", 0, 0, 0, 0, true, "repeat-x");
     }
 
-    public init(): void{
+    public init(): void {
         this.collision.fullCollision = false;
         this.w = this.game.w;
         this.h = 32;
         this.y = this.game.h - this.h;
         super.init();
 
-        this.collision.onUpdate = () => window["dude"].collision.update();
+        //this.collision.onUpdate = () => window["dude"].collision.update();
 
     }
 
     public onUpdate() {
-        //if (this.game.keyboard.rightArrow) {
-        //    this.velocity.x = -config.baseVelocity;
-        //} else if (this.game.keyboard.leftArrow) {
-        //    this.velocity.x = config.baseVelocity;  
-        //} else {
-        //    this.velocity.x = 0;
-        //}
-        this.velocity.x = -gobalVars.baseVelocity;
+        if (this.game.keyboard.rightArrow) {
+            //    this.velocity.x = -this.baseVelocity;
+        } else if (this.game.keyboard.leftArrow) {
+            //    this.velocity.x = this.baseVelocity;  
+        } else {
+            this.velocity.x = 0;
+        }
+        //this.velocity.x = -gobalVars.baseVelocity;
         this.updatePosition();
     }
 }
@@ -423,30 +452,50 @@ export class Ground extends RollSprite {
 
 export class Luffy extends AtlasSprite {
 
+    private _isRight: boolean = true;
+
     constructor() {
-        super("/assets/luffy.png", "/assets/luffy.json");
+        super("/assets/luffy.png", "/assets/luffy.json", true);
         this.x = 100;
         this.y = 100;
         this.h = 50;
-        this.setAnimation("stopedright", 5);
+        this.setAnimation("stopedright", 7);
     }
 
     public onUpdate() {
         this.updatePositionWithGravity();
 
+        var animation = "";
+
         if (this.game.keyboard.d) {
-            this.setAnimation("running-right", 6);
-            this.velocity.x = 2;
+            this._isRight = true;
+            animation = "running-right";
+            this.velocity.x = 250;
         } else if (this.game.keyboard.a) {
-            this.setAnimation("running-left", 6);
-            this.velocity.x = -2;
+            this._isRight = false;
+            animation = "running-left";
+            this.velocity.x = -250;
         } else {
+            if (this._isRight) {
+                animation = "stopedright";
+            } else {
+                animation = "stopedleft";
+            }
             this.velocity.x = 0;
-            this.setAnimation("stopedright", 6);
         }
 
-        if (this.isTouchingGround && (this.game.keyboard.w)) {
-            this.velocity.y = -10;
+        if (animation && this.collision.bottom) {
+            this.setAnimation(animation, 7);
+        }
+
+
+        if (this.collision.bottom && (this.game.keyboard.w)) {
+            if (this._isRight) {
+                this.setAnimation("jump-right", 10);
+            } else {
+                this.setAnimation("jump-left", 10);
+            }
+            this.velocity.y = -450;
         }
 
     }
